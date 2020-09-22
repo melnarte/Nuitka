@@ -47,9 +47,11 @@ def doMissingOptimizationReport():
 
     for desc in _missing_operations:
         if _error_for_missing:
-            optimization_logger.warning("Missing optimization, used fallback: %s", desc)
+            optimization_logger.warning(
+                "Missing optimization, used fallback: %s" % desc
+            )
         else:
-            optimization_logger.info("Missing optimization, used fallback: %s", desc)
+            optimization_logger.info("Missing optimization, used fallback: %s" % desc)
 
 
 def onMissingHelper(helper_name, source_ref):
