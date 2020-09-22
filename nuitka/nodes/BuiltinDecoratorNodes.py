@@ -23,48 +23,50 @@ C call to the built-ins resulting wrapper, will speed up things.
 """
 
 from .ExpressionBases import ExpressionChildHavingBase
-from .shapes.BuiltinTypeShapes import tshape_classmethod, tshape_staticmethod
+from .shapes.BuiltinTypeShapes import (
+    tshape_classmethod,
+    tshape_function,
+    tshape_staticmethod,
+)
 
 
-class ExpressionBuiltinStaticmethod(ExpressionChildHavingBase):
-    kind = "EXPRESSION_BUILTIN_STATICMETHOD"
-
+class ExpressionBuiltinStaticmethodClassmethodBase(ExpressionChildHavingBase):
     named_child = "value"
-    getValue = ExpressionChildHavingBase.childGetter("value")
 
     def __init__(self, value, source_ref):
         ExpressionChildHavingBase.__init__(self, value=value, source_ref=source_ref)
 
     def computeExpression(self, trace_collection):
-        # TODO: Consider shape and predict exception raise or not.
-        trace_collection.onExceptionRaiseExit(BaseException)
+        if self.mayRaiseExceptionOperation():
+            trace_collection.onExceptionRaiseExit(BaseException)
 
         return self, None, None
 
     def isKnownToBeIterable(self, count):
         return False
+
+    def mayRaiseException(self, exception_type):
+        # TODO: This doesn't consider the exception asked, like many places.
+        return (
+            self.subnode_value.mayRaiseException(exception_type)
+            or self.mayRaiseExceptionOperation()
+        )
+
+    def mayRaiseExceptionOperation(self):
+        shape = self.subnode_value.getTypeShape()
+
+        return shape not in (tshape_function, tshape_staticmethod, tshape_classmethod)
+
+
+class ExpressionBuiltinStaticmethod(ExpressionBuiltinStaticmethodClassmethodBase):
+    kind = "EXPRESSION_BUILTIN_STATICMETHOD"
 
     def getTypeShape(self):
         return tshape_staticmethod
 
 
-class ExpressionBuiltinClassmethod(ExpressionChildHavingBase):
+class ExpressionBuiltinClassmethod(ExpressionBuiltinStaticmethodClassmethodBase):
     kind = "EXPRESSION_BUILTIN_CLASSMETHOD"
-
-    named_child = "value"
-    getValue = ExpressionChildHavingBase.childGetter("value")
-
-    def __init__(self, value, source_ref):
-        ExpressionChildHavingBase.__init__(self, value=value, source_ref=source_ref)
-
-    def computeExpression(self, trace_collection):
-        # TODO: Consider shape and predict exception raise or not.
-        trace_collection.onExceptionRaiseExit(BaseException)
-
-        return self, None, None
-
-    def isKnownToBeIterable(self, count):
-        return False
 
     def getTypeShape(self):
         return tshape_classmethod
