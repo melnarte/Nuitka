@@ -57,7 +57,11 @@ struct Nuitka_FunctionObject {
     // Same as code_object->co_varnames
     PyObject **m_varnames;
 
+    // C implementation of the function
     function_impl_code m_c_code;
+
+    // Constant return value to use.
+    PyObject *m_constant_return_value;
 
 #if PYTHON_VERSION >= 380
     vectorcallfunc m_vectorcall;
