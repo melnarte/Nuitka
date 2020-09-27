@@ -60,9 +60,6 @@ struct Nuitka_FunctionObject {
     // C implementation of the function
     function_impl_code m_c_code;
 
-    // Constant return value to use.
-    PyObject *m_constant_return_value;
-
 #if PYTHON_VERSION >= 380
     vectorcallfunc m_vectorcall;
 #endif
@@ -86,6 +83,9 @@ struct Nuitka_FunctionObject {
 #if PYTHON_VERSION >= 300
     PyObject *m_qualname;
 #endif
+
+    // Constant return value to use.
+    PyObject *m_constant_return_value;
 
     // A kind of uuid for the function object, used in comparisons.
     long m_counter;
