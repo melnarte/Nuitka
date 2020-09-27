@@ -42,7 +42,8 @@ class ExpressionBuiltinStaticmethodClassmethodBase(ExpressionChildHavingBase):
 
         return self, None, None
 
-    def isKnownToBeIterable(self, count):
+    @staticmethod
+    def isKnownToBeIterable(count):
         return False
 
     def mayRaiseException(self, exception_type):
